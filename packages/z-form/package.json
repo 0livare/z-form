@@ -11,6 +11,7 @@
   "repository": "https://github.com/0livare/z-form",
   "scripts": {
     "build": "tsup lib/index.ts --format cjs,esm --dts",
+    "dev": "tsup lib/index.ts --format cjs,esm --dts --watch",
     "test": "BABEL_ENV=test jest",
     "lint": "tsc"
   },

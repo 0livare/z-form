@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "test": "pnpm -r test",
-    "build": "pnpm -F z-form build"
+    "build": "pnpm -F z-form build",
+    "dev": "pnpm -r --parallel run dev"
   },
   "author": "Zach Olivare <github.com/0livare>",
   "license": "ISC",

@@ -1,0 +1,9 @@
+{
+  "name": "z-form",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Zach Olivare <github.com/0livare>",
+  "license": "ISC"
+}

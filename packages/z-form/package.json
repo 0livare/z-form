@@ -1,0 +1,23 @@
+{
+  "name": "z-form",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/*"
+  ],
+  "repository": "https://github.com/0livare/z-form",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Zach Olivare <github.com/0livare>",
+  "license": "ISC",
+  "keywords": [
+    "react",
+    "form",
+    "build",
+    "validation"
+  ]
+}

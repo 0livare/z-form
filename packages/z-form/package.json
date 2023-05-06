@@ -10,7 +10,9 @@
   ],
   "repository": "https://github.com/0livare/z-form",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsup lib/index.ts --format cjs,esm --dts",
+    "test": "BABEL_ENV=test jest",
+    "lint": "tsc"
   },
   "author": "Zach Olivare <github.com/0livare>",
   "license": "ISC",
@@ -19,5 +21,14 @@
     "form",
     "build",
     "validation"
-  ]
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.21.8",
+    "@babel/preset-env": "^7.21.5",
+    "@babel/preset-typescript": "^7.21.5",
+    "@types/jest": "^29.5.1",
+    "jest": "^29.5.0",
+    "tsup": "^6.7.0",
+    "typescript": "^5.0.4"
+  }
 }

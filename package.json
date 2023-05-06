@@ -2,8 +2,12 @@
   "name": "z-form",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "pnpm -r test",
+    "build": "pnpm -F z-form build"
   },
   "author": "Zach Olivare <github.com/0livare>",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "^2.8.8"
+  }
 }

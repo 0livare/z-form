@@ -1,5 +1,6 @@
 import React from 'react'
-import {Form, useCreateForm, useFormListener} from 'z-form'
+import {Form, useCreateForm, useFormValue} from 'z-form'
+import {FlashOnReRender} from './flash-on-re-render'
 
 import './app.css'
 
@@ -20,14 +21,25 @@ export default function App() {
   return (
     <Form
       form={form}
-      className="flex h-full items-center justify-center flex-col gap-4"
+      className="flex h-full items-center justify-center flex-col gap-4 relative"
     >
-      <input type="text" {...form.register('foo')} />
-      <input type="text" {...form.register('bar')} />
+      <TextField type="text" {...form.register('foo')} />
+      <TextField type="text" {...form.register('bar')} />
 
       <button type="button" onClick={() => setCount((c) => c + 1)}>
         Re-Render
       </button>
+
+      <FlashOnReRender />
     </Form>
+  )
+}
+
+function TextField(props: React.ComponentProps<'input'>) {
+  return (
+    <div className="relative">
+      <input {...props} />
+      <FlashOnReRender />
+    </div>
   )
 }

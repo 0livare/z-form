@@ -2,12 +2,16 @@ import React from 'react'
 import {useCreateForm} from './use-create-form'
 import {FormContext} from './context'
 
-export type FormProps = React.ComponentProps<'form'> & {
+export type FormProps = Omit<React.ComponentProps<'form'>, 'onSubmit'> & {
   form: ReturnType<typeof useCreateForm>
+  onSubmit?: (
+    e: React.FormEvent<HTMLFormElement>,
+    values: Record<string, string>,
+  ) => void
 }
 
 export function Form(props: FormProps) {
-  const {form, children, ...rest} = props
+  const {form, children, onSubmit, ...rest} = props
   const rootRef = React.useRef<HTMLFormElement>(null)
   form.refObject = rootRef
 
@@ -17,6 +21,10 @@ export function Form(props: FormProps) {
       ref={rootRef}
       onChange={form.handleChange}
       onBlur={form.handleBlur}
+      onSubmit={(e) => {
+        form.handleSubmit(e)
+        onSubmit?.(e, form.values)
+      }}
     >
       <FormContext.Provider value={form}>{children}</FormContext.Provider>
     </form>

@@ -6,18 +6,9 @@ import './app.css'
 
 export default function App() {
   const [, setCount] = React.useState(0)
-  const [initialValues, setInitialValues] = React.useState({
-    foo: null as string | null,
-  })
-
-  React.useEffect(() => {
-    setTimeout(() => setInitialValues({foo: 'foo'}), 1000)
-    setTimeout(() => setInitialValues({foo: 'baz'}), 2000)
-  }, [])
 
   const form = useCreateForm({
-    allowReinitialize: true,
-    initialValues,
+    initialValues: {foo: 'foo'},
   })
 
   return (
@@ -31,6 +22,8 @@ export default function App() {
       <button type="button" onClick={() => setCount((c) => c + 1)}>
         Re-Render
       </button>
+
+      <button type="submit">Submit</button>
 
       <FlashOnReRender />
     </Form>

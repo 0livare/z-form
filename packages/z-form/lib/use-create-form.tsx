@@ -1,10 +1,11 @@
 import React from 'react'
-import {Nullable} from './types'
 import {useReRender} from './use-re-render'
+import {LooseAutoComplete} from './types'
 
 export type UseCreateFormArgs = {
-  initialValues?: Record<string, string | null | undefined>
+  initialValues?: Record<string, string>
   allowReinitialize?: boolean
+  onSubmit?: (values: Record<string, string>) => void
 }
 
 export type Listener = (name: string, value: string) => void
@@ -14,7 +15,15 @@ export function useCreateForm(args?: UseCreateFormArgs) {
   const reInitializeCountRef = React.useRef(0)
   const reRender = useReRender()
 
-  const formRef = React.useRef(new FormManager(args))
+  const submitHandlerRef = React.useRef(args?.onSubmit ?? null)
+  submitHandlerRef.current = args?.onSubmit ?? null
+
+  const formRef = React.useRef(
+    new FormManager({
+      initialValues,
+      submitHandlerRef,
+    }),
+  )
 
   React.useEffect(() => {
     if (reInitializeCountRef.current > 30) {
@@ -42,37 +51,38 @@ export function useCreateForm(args?: UseCreateFormArgs) {
 }
 
 // TODO:
-// - initialValues
-// - allowReinitialize
 // - validation
-// - submitCount
-// - submission process
-// - string typing everywhere
+// - strong typing everywhere
 // - handling nested form values
 
 export class FormManager {
-  readonly values: Record<string, string> = {}
-  readonly errors: Record<string, string> = {}
-  readonly touched: Record<string, true> = {}
+  values: Record<string, string> = {}
+  errors: Record<string, string> = {}
+  touched: Record<string, true> = {}
+
+  submitCount: number = 0
+  submitHandlerRef: null | React.RefObject<
+    (values: Record<string, string>) => void
+  > = null
 
   refObject: React.RefObject<HTMLFormElement> | null = null
-  initialValues: Record<string, Nullable<string>> | null = null
+  initialValues: Record<string, string> | null = null
   private listeners: Map<string, Listener[]> = new Map()
 
-  constructor(args?: UseCreateFormArgs) {
+  constructor(args?: {
+    initialValues?: UseCreateFormArgs['initialValues']
+    submitHandlerRef: React.RefObject<(values: Record<string, string>) => void>
+  }) {
     this.initialValues = args?.initialValues ?? null
+    this.values = args?.initialValues ?? {}
+    this.submitHandlerRef = args?.submitHandlerRef ?? null
   }
 
   handleChange = (e: React.FormEvent<HTMLFormElement>) => {
     const target = e.target as HTMLInputElement
     if (!target.name) return
     this.values[target.name] = target.value
-
-    if (this.listeners.has(target.name)) {
-      this.listeners.get(target.name)!.forEach((listener) => {
-        listener(target.name, target.value)
-      })
-    }
+    this.invoke(target.name, target.value)
     console.info(`CHANGE: ${target.name}=${target.value}`)
   }
 
@@ -80,13 +90,25 @@ export class FormManager {
     if (!e.target.name) return
     console.info('BLUR: ', e.target.name)
     this.touched[e.target.name] = true
+    this.invoke(`touched:${e.target.name}`, true)
   }
 
-  subscribe = (nameSubscriptions: string[], listener: Listener) => {
+  handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    this.submitCount++
+    console.info('SUBMIT: ', this.values)
+    this.submitHandlerRef?.current?.(this.values)
+    this.invoke('submitCount', this.submitCount)
+  }
+
+  subscribe = (
+    nameSubscriptions: Array<LooseAutoComplete<'submitCount'>>,
+    listener: Listener,
+  ) => {
     nameSubscriptions.forEach((name) => {
-      const listeners = this.listeners.get(name) || []
+      const listeners = this.listeners.get(name as string) || []
       listeners.push(listener)
-      this.listeners.set(name, listeners)
+      this.listeners.set(name as string, listeners)
     })
   }
 
@@ -102,6 +124,11 @@ export class FormManager {
     })
   }
 
+  invoke = (name: string, value: any) => {
+    if (!this.listeners.has(name)) return
+    this.listeners.get(name)!.forEach((listener) => listener(name, value))
+  }
+
   register = (name: string) => {
     const defaultValue = this.initialValues?.[name] ?? undefined
     return {name, defaultValue}
@@ -109,5 +136,6 @@ export class FormManager {
 
   reset = () => {
     this.refObject?.current?.reset()
+    this.values = this.initialValues ?? {}
   }
 }

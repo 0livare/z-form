@@ -7,7 +7,14 @@ export function useFormValue<
   K extends keyof T = keyof T,
 >(
   name: K extends string
-    ? K | `touched:${K}` | `error:${K}` | 'submitCount' | undefined
+    ?
+        | K
+        | `touched:${K}`
+        | `error:${K}`
+        | 'submitCount'
+        | 'touched'
+        | 'errors'
+        | undefined
     : never,
   form: FormContextShape | undefined = undefined,
 ): T[K] | undefined {

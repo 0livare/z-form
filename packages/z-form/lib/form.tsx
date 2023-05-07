@@ -13,7 +13,7 @@ export type FormProps = Omit<React.ComponentProps<'form'>, 'onSubmit'> & {
 export function Form(props: FormProps) {
   const {form, children, onSubmit, ...rest} = props
   const rootRef = React.useRef<HTMLFormElement>(null)
-  form.refObject = rootRef
+  form.formElRef = rootRef
 
   return (
     <form

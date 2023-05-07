@@ -8,8 +8,16 @@ export type FormProps = React.ComponentProps<'form'> & {
 
 export function Form(props: FormProps) {
   const {form, children, ...rest} = props
+  const rootRef = React.useRef<HTMLFormElement>(null)
+  form.refObject = rootRef
+
   return (
-    <form {...rest} onChange={form.handleChange} onBlur={form.handleBlur}>
+    <form
+      {...rest}
+      ref={rootRef}
+      onChange={form.handleChange}
+      onBlur={form.handleBlur}
+    >
       <FormContext.Provider value={form}>{children}</FormContext.Provider>
     </form>
   )

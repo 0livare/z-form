@@ -12,11 +12,13 @@ export default function App() {
 
   React.useEffect(() => {
     setTimeout(() => setInitialValues({foo: 'foo'}), 1000)
+    setTimeout(() => setInitialValues({foo: 'baz'}), 2000)
   }, [])
 
-  console.log('initialValues', initialValues)
-
-  const form = useCreateForm({initialValues})
+  const form = useCreateForm({
+    allowReinitialize: true,
+    initialValues,
+  })
 
   return (
     <Form

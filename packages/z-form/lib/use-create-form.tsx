@@ -11,18 +11,34 @@ export type Listener = (name: string, value: string) => void
 
 export function useCreateForm(args?: UseCreateFormArgs) {
   const {allowReinitialize, initialValues} = args ?? {}
-
+  const reInitializeCountRef = React.useRef(0)
   const reRender = useReRender()
-  const formManagerRef = React.useRef(new FormManager(args))
+
+  const formRef = React.useRef(new FormManager(args))
 
   React.useEffect(() => {
+    if (reInitializeCountRef.current > 30) {
+      const message =
+        'initialValues passed to useCreateForm() MUST be memoized when allowReinitialize is passed. You can either remove allowReinitialize or wrap the initialValues in useMemo() before passing it to useCreateForm().'
+
+      if (process.env.NODE_ENV === 'development') {
+        throw new Error(message)
+      } else if (reInitializeCountRef.current > 100) {
+        console.error(message)
+        return
+      }
+    }
+
+    if (!initialValues) return
     if (allowReinitialize) {
-      formManagerRef.current.initialValues = initialValues ?? null
+      reInitializeCountRef.current = reInitializeCountRef.current + 1
+      formRef.current.initialValues = initialValues ?? null
+      formRef.current?.reset()
       reRender()
     }
   }, [initialValues])
 
-  return formManagerRef.current as FormManager
+  return formRef.current as FormManager
 }
 
 // TODO:
@@ -39,6 +55,7 @@ export class FormManager {
   readonly errors: Record<string, string> = {}
   readonly touched: Record<string, true> = {}
 
+  refObject: React.RefObject<HTMLFormElement> | null = null
   initialValues: Record<string, Nullable<string>> | null = null
   private listeners: Map<string, Listener[]> = new Map()
 
@@ -87,7 +104,10 @@ export class FormManager {
 
   register = (name: string) => {
     const defaultValue = this.initialValues?.[name] ?? undefined
-    const key = defaultValue?.toString()
-    return defaultValue ? {key, name, defaultValue} : {name}
+    return {name, defaultValue}
+  }
+
+  reset = () => {
+    this.refObject?.current?.reset()
   }
 }

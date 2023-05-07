@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './zapp.tsx'
+import App from './app.tsx'
 
 import './reset.css'
 import './index.css'

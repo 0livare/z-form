@@ -8,7 +8,10 @@ export type UseCreateFormArgs = {
   onSubmit?: (values: Record<string, string>) => void
 }
 
-export type Listener = (name: string, value: string) => void
+export type Listener = (
+  name: string,
+  value: string | number | boolean | undefined,
+) => void
 
 export function useCreateForm(args?: UseCreateFormArgs) {
   const {allowReinitialize, initialValues} = args ?? {}
@@ -82,7 +85,7 @@ export class FormManager {
     const target = e.target as HTMLInputElement
     if (!target.name) return
     this.values[target.name] = target.value
-    this.invoke(target.name, target.value)
+    this.invokeAll(target.name, target.value)
     console.info(`CHANGE: ${target.name}=${target.value}`)
   }
 
@@ -90,7 +93,7 @@ export class FormManager {
     if (!e.target.name) return
     console.info('BLUR: ', e.target.name)
     this.touched[e.target.name] = true
-    this.invoke(`touched:${e.target.name}`, true)
+    this.invokeAll(`touched:${e.target.name}`, true)
   }
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -98,7 +101,7 @@ export class FormManager {
     this.submitCount++
     console.info('SUBMIT: ', this.values)
     this.submitHandlerRef?.current?.(this.values)
-    this.invoke('submitCount', this.submitCount)
+    this.invokeAll('submitCount', this.submitCount)
   }
 
   subscribe = (
@@ -109,6 +112,9 @@ export class FormManager {
       const listeners = this.listeners.get(name as string) || []
       listeners.push(listener)
       this.listeners.set(name as string, listeners)
+
+      const currentValue = this.getListenerValue(name as string)
+      listener(name as string, currentValue)
     })
   }
 
@@ -124,9 +130,29 @@ export class FormManager {
     })
   }
 
-  invoke = (name: string, value: any) => {
+  invokeAll = (name: string, value?: any) => {
     if (!this.listeners.has(name)) return
-    this.listeners.get(name)!.forEach((listener) => listener(name, value))
+
+    if (value !== undefined) {
+      const val = value ?? this.getListenerValue(name)
+      this.listeners.get(name)!.forEach((listener) => listener(name, value))
+      return
+    }
+  }
+
+  getListenerValue = (name: string) => {
+    if (name.includes(':')) {
+      const [type, realName] = name.split(':')
+      if (!realName) return
+      if (type === 'touched') {
+        return this.touched[realName] ?? false
+      }
+    }
+
+    if (name === 'submitCount') {
+      return this.submitCount
+    }
+    return this.values[name]
   }
 
   register = (name: string) => {

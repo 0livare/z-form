@@ -6,7 +6,9 @@ export function useFormValue<
   T extends Record<string, any> = Record<string, any>,
   K extends keyof T = keyof T,
 >(
-  name: K | undefined,
+  name: K extends string
+    ? K | `touched:${K}` | `error:${K}` | 'submitCount' | undefined
+    : never,
   form: FormContextShape | undefined = undefined,
 ): T[K] | undefined {
   const contextForm = useFormContext()
@@ -19,7 +21,7 @@ export function useFormValue<
   }
 
   const [value, setValue] = React.useState<T[K] | undefined>(() => {
-    return finalForm?.values[name as string] as T[K] | undefined
+    return finalForm?.getListenerValue(name as string) as T[K] | undefined
   })
 
   React.useEffect(() => {

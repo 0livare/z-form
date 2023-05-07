@@ -4,12 +4,20 @@ import {FlashOnReRender} from './flash-on-re-render'
 
 import './app.css'
 
+type FormShape = {
+  foo: string
+  bar: string
+}
+
 export default function App() {
   const [, setCount] = React.useState(0)
 
   const form = useCreateForm({
     initialValues: {foo: 'foo'},
   })
+
+  const submitCount = useFormValue<FormShape>('submitCount', form)
+  console.log('submitCount', submitCount)
 
   return (
     <Form

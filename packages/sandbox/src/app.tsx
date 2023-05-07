@@ -1,5 +1,5 @@
 import React from 'react'
-import {Form, useCreateForm, useFormValue} from 'z-form'
+import {Form, useCreateForm, useFormValue} from '../../zed-form/dist'
 import zod from 'zod'
 
 import {FlashOnReRender} from './flash-on-re-render'

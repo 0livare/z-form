@@ -1,5 +1,5 @@
 {
-  "name": "z-form",
+  "name": "zed-form",
   "version": "0.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -8,21 +8,16 @@
   "files": [
     "dist/*"
   ],
-  "repository": "https://github.com/0livare/z-form",
+  "repository": "https://github.com/0livare/zed-form",
   "scripts": {
     "build": "tsup lib/index.ts --format cjs,esm --dts",
     "dev": "tsup lib/index.ts --format cjs,esm --dts --watch",
     "test": "BABEL_ENV=test jest",
     "lint": "tsc"
   },
-  "author": "Zach Olivare <github.com/0livare>",
-  "license": "ISC",
-  "keywords": [
-    "react",
-    "form",
-    "build",
-    "validation"
-  ],
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
   "peerDependencies": {
     "react": "17 || 18",
     "react-dom": "17 || 18",
@@ -47,7 +42,17 @@
     "typescript": "^5.0.4",
     "zod": "^3.21.4"
   },
-  "dependencies": {
-    "lodash": "^4.17.21"
-  }
+  "author": "Zach Olivare <https://github.com/0livare>",
+  "license": "ISC",
+  "keywords": [
+    "react",
+    "form",
+    "validation",
+    "build",
+    "zod",
+    "uncontrolled",
+    "fast",
+    "scalable",
+    "typescript"
+  ]
 }

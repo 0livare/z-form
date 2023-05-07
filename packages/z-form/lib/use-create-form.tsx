@@ -1,13 +1,27 @@
 import React from 'react'
+import {Nullable} from './types'
+import {useReRender} from './use-re-render'
 
 export type UseCreateFormArgs = {
-  initialValues?: Record<string, string>
+  initialValues?: Record<string, string | null | undefined>
+  allowReinitialize?: boolean
 }
 
 export type Listener = (name: string, value: string) => void
 
 export function useCreateForm(args?: UseCreateFormArgs) {
+  const {allowReinitialize, initialValues} = args ?? {}
+
+  const reRender = useReRender()
   const formManagerRef = React.useRef(new FormManager(args))
+
+  React.useEffect(() => {
+    if (allowReinitialize) {
+      formManagerRef.current.initialValues = initialValues ?? null
+      reRender()
+    }
+  }, [initialValues])
+
   return formManagerRef.current as FormManager
 }
 
@@ -18,13 +32,14 @@ export function useCreateForm(args?: UseCreateFormArgs) {
 // - submitCount
 // - submission process
 // - string typing everywhere
+// - handling nested form values
 
 export class FormManager {
   readonly values: Record<string, string> = {}
   readonly errors: Record<string, string> = {}
   readonly touched: Record<string, true> = {}
 
-  private readonly initialValues: Record<string, string> | null = null
+  initialValues: Record<string, Nullable<string>> | null = null
   private listeners: Map<string, Listener[]> = new Map()
 
   constructor(args?: UseCreateFormArgs) {

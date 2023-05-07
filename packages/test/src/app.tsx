@@ -5,10 +5,17 @@ import './app.css'
 
 export default function App() {
   const [, setCount] = React.useState(0)
-
-  const form = useCreateForm({
-    initialValues: {foo: 'foo'},
+  const [initialValues, setInitialValues] = React.useState({
+    foo: null as string | null,
   })
+
+  React.useEffect(() => {
+    setTimeout(() => setInitialValues({foo: 'foo'}), 1000)
+  }, [])
+
+  console.log('initialValues', initialValues)
+
+  const form = useCreateForm({initialValues})
 
   return (
     <Form

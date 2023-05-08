@@ -212,9 +212,7 @@ export class FormManager {
   // prettier-ignore
   public register(args: {type: 'checkbox', name: string, value?: string}): Pick<React.ComponentProps<'input'>, 'name' | 'type' | 'value' | 'defaultChecked'>
   // prettier-ignore
-  public register(args: {type: 'checkbox', name: string, value?: string}): Pick<React.ComponentProps<'input'>, 'name' | 'type' | 'value' | 'defaultChecked'>
-  // prettier-ignore
-  public register(args: {type: 'select', name: string, value?: string}): Pick<React.ComponentProps<'select'>, 'name' | 'defaultValue'>
+  public register(args: {type: 'select', name: string}): Pick<React.ComponentProps<'select'>, 'name' | 'defaultValue'>
   public register(args: {
     name: string
     type?: 'text' | 'checkbox' | 'radio' | 'select'

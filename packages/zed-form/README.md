@@ -19,7 +19,7 @@ With Zed Form, every `<input>` is an "uncontrolled" input. Instead of forcing th
 On top of that, Zed Form supports all the features you've come to expect form other form libraries:
 
 - Schema error validation
-  - Built in support for [zod](https://github.com/colinhacks/zod) (but you can supply an adapter for any schema validation library
+  - Built in support for [zod](https://github.com/colinhacks/zod) (but you can supply an adapter for any schema validation library)
 - Setting initial values
 - "Touched" tracking, so errors by default aren't shown until the user has interacted with a particular input
 - Opt-in support for tracking a form value via React state (useful for when you need to hide or show form inputs based on a previous input value)
@@ -38,11 +38,11 @@ yarn add zed-form  # yarn
 import {Form, useCreateForm} from 'zed-form'
 
 function App() {
-  const form = useCreateForm()
+  const {form, register} = useCreateForm()
   return (
     <Form form={form}>
-      <input type="text" {...form.register('foo')} />
-      <input type="text" {...form.register('bar')} />
+      <input {...register({name: 'foo'})} />
+      <input {...register({name: 'bar'})} />
     </Form>
   )
 }
@@ -51,6 +51,7 @@ function App() {
 ## Example with Schema Validation
 
 ```js
+import React from 'react'
 import {Form, useCreateForm, useFormValue} from 'zed-form'
 import zod from 'zod'
 
@@ -59,15 +60,15 @@ const schema = zod.object({
 })
 
 function App() {
-  const form = useCreateForm({
+  const {form, register} = useCreateForm({
     initialValues: {foo: 'foo'},
     validationSchema: schema,
   })
 
   return (
     <Form form={form}>
-      <TextField type="text" {...form.register('foo')} />
-      <TextField type="text" {...form.register('bar')} />
+      <TextField {...register({name: 'foo'})} />
+      <TextField {...register({name: 'bar'})} />
     </Form>
   )
 }
@@ -77,7 +78,7 @@ function TextField(props: React.ComponentProps<'input'>) {
 
   return (
     <div>
-      <input {...props} className="w-full" />
+      <input {...props} />
       {error && <p style={{color: 'red'}}>{error}</p>}
     </div>
   )

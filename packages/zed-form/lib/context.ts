@@ -5,6 +5,6 @@ export type FormContextShape = null | FormManager
 export const FormContext = React.createContext<FormContextShape>(null)
 
 export function useFormContext() {
-  const form = React.useContext(FormContext)
-  return {form, register: form?.register}
+  const form = React.useContext(FormContext)!
+  return {form, register: form.register}
 }

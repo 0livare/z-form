@@ -18,7 +18,7 @@ const schema = zod.object({
 export default function App() {
   const [, setCount] = React.useState(0)
 
-  const form = useCreateForm({
+  const {form, register} = useCreateForm({
     initialValues: {foo: 'foo'},
     validationSchema: schema,
   })
@@ -28,8 +28,8 @@ export default function App() {
       form={form}
       className="flex h-full items-center justify-center flex-col gap-4 relative"
     >
-      <TextField type="text" {...form.register('foo')} />
-      <TextField type="text" {...form.register('bar')} />
+      <TextField type="text" {...register('foo')} />
+      <TextField type="text" {...register('bar')} />
 
       <button type="button" onClick={() => setCount((c) => c + 1)}>
         Re-Render

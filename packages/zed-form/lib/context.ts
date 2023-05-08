@@ -1,10 +1,10 @@
 import React from 'react'
-import {FormManager, useCreateForm} from './use-create-form'
+import type {FormManager} from './use-create-form'
 
-export type FormContextShape = null | ReturnType<typeof useCreateForm>
-
+export type FormContextShape = null | FormManager
 export const FormContext = React.createContext<FormContextShape>(null)
 
 export function useFormContext() {
-  return React.useContext(FormContext)
+  const form = React.useContext(FormContext)
+  return {form, register: form?.register}
 }

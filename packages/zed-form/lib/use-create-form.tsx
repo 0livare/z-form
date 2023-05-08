@@ -64,7 +64,8 @@ export function useCreateForm(args?: UseCreateFormArgs) {
     }
   }, [initialValues])
 
-  return formRef.current as FormManager
+  const form = formRef.current as FormManager
+  return {form, register: form.register}
 }
 
 // TODO:

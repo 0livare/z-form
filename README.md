@@ -38,11 +38,11 @@ yarn add zed-form  # yarn
 import {Form, useCreateForm} from 'zed-form'
 
 function App() {
-  const form = useCreateForm()
+  const {form, register} = useCreateForm()
   return (
     <Form form={form}>
-      <input type="text" {...form.register('foo')} />
-      <input type="text" {...form.register('bar')} />
+      <input type="text" {...register('foo')} />
+      <input type="text" {...register('bar')} />
     </Form>
   )
 }
@@ -59,15 +59,15 @@ const schema = zod.object({
 })
 
 function App() {
-  const form = useCreateForm({
+  const {form, register} = useCreateForm({
     initialValues: {foo: 'foo'},
     validationSchema: schema,
   })
 
   return (
     <Form form={form}>
-      <TextField type="text" {...form.register('foo')} />
-      <TextField type="text" {...form.register('bar')} />
+      <TextField type="text" {...register('foo')} />
+      <TextField type="text" {...register('bar')} />
     </Form>
   )
 }

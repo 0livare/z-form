@@ -1,6 +1,6 @@
 import React from 'react'
 import {FormContextShape, useFormContext} from './context'
-import {Listener} from './use-create-form'
+import {FormManager, Listener} from './use-create-form'
 
 export function useFormValue<
   T extends Record<string, any> = Record<string, any>,
@@ -16,9 +16,9 @@ export function useFormValue<
         | 'errors'
         | undefined
     : never,
-  form: FormContextShape | undefined = undefined,
+  form: FormManager | undefined = undefined,
 ): T[K] | undefined {
-  const contextForm = useFormContext()
+  const {form: contextForm} = useFormContext()
   const finalForm = form || contextForm
 
   if (!finalForm && process.env.NODE_ENV === 'development') {

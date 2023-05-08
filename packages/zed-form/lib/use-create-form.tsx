@@ -6,10 +6,12 @@ import {LooseAutoComplete} from './types'
 import {zodValidationAdapter} from './validation/zod-adapter'
 import {ValidationAdapter} from './validation/validation-types'
 
+export type InitialValues = Record<string, string | boolean | string[]>
+
 export type UseCreateFormArgs = {
-  initialValues?: Record<string, string>
+  initialValues?: InitialValues
   allowReinitialize?: boolean
-  onSubmit?: (values: Record<string, string>) => void
+  onSubmit?: (values: InitialValues) => void
   validationSchema?: any
   validationAdapter?: ValidationAdapter
 }
@@ -73,16 +75,15 @@ export function useCreateForm(args?: UseCreateFormArgs) {
 // - handling nested form value objects
 
 export class FormManager {
-  values: Record<string, string> = {}
+  values: InitialValues = {}
   touched: Record<string, true> = {}
 
   submitCount: number = 0
-  submitHandlerRef: null | React.RefObject<
-    (values: Record<string, string>) => void
-  > = null
+  submitHandlerRef: null | React.RefObject<(values: InitialValues) => void> =
+    null
 
   formElRef: React.RefObject<HTMLFormElement> | null = null
-  initialValues: Record<string, string> | null = null
+  initialValues: InitialValues | null = null
   private listeners: Map<string, Listener[]> = new Map()
 
   errors: Record<string, string> = {}
@@ -92,7 +93,7 @@ export class FormManager {
 
   constructor(args?: {
     initialValues?: UseCreateFormArgs['initialValues']
-    submitHandlerRef: React.RefObject<(values: Record<string, string>) => void>
+    submitHandlerRef: React.RefObject<(values: InitialValues) => void>
     validationSchemaRef: React.RefObject<any>
     validationAdapter?: ValidationAdapter
   }) {
@@ -101,13 +102,32 @@ export class FormManager {
     this.submitHandlerRef = args?.submitHandlerRef ?? null
     this.validationSchemaRef = args?.validationSchemaRef ?? null
     this.validationAdapter = args?.validationAdapter ?? zodValidationAdapter
+
+    this.register = this.register.bind(this)
   }
 
   handleChange = (e: React.FormEvent<HTMLFormElement>) => {
     const target = e.target as HTMLInputElement
     if (!target.name) return
-    this.values[target.name] = target.value
-    this.invokeListenersFor(target.name, target.value)
+
+    if (target.type === 'checkbox') {
+      if (Array.isArray(this.values[target.name])) {
+        const values = new Set(this.values[target.name] as string[])
+        if (target.checked) {
+          values.add(target.value)
+        } else {
+          values.delete(target.value)
+        }
+        this.values[target.name] = Array.from(values)
+      } else {
+        this.values[target.name] = target.checked
+      }
+    } else {
+      // Works for all of: text, radio, or select
+      this.values[target.name] = target.value
+      this.invokeListenersFor(target.name, target.value)
+    }
+
     console.info(`CHANGE: ${target.name}=${target.value}`)
     this.validate()
   }
@@ -185,9 +205,43 @@ export class FormManager {
     return this.values[name as string]
   }
 
-  register = (name: string) => {
-    const defaultValue = this.initialValues?.[name] ?? undefined
-    return {name, defaultValue}
+  // prettier-ignore
+  public register(args: {type?: 'text' | undefined, name: string}): Pick<React.ComponentProps<'input'>, 'name' | 'type' | 'defaultValue'>
+  // prettier-ignore
+  public register(args: {type: 'radio', name: string, value: string}): Pick<React.ComponentProps<'input'>, 'name' | 'type' | 'value' | 'defaultChecked'>
+  // prettier-ignore
+  public register(args: {type: 'checkbox', name: string, value?: string}): Pick<React.ComponentProps<'input'>, 'name' | 'type' | 'value' | 'defaultChecked'>
+  // prettier-ignore
+  public register(args: {type: 'checkbox', name: string, value?: string}): Pick<React.ComponentProps<'input'>, 'name' | 'type' | 'value' | 'defaultChecked'>
+  // prettier-ignore
+  public register(args: {type: 'select', name: string, value?: string}): Pick<React.ComponentProps<'select'>, 'name' | 'defaultValue'>
+  public register(args: {
+    name: string
+    type?: 'text' | 'checkbox' | 'radio' | 'select'
+    value?: string
+  }): any {
+    const {name, type = 'text', value} = args
+    console.log('args', args)
+    const initial = this.initialValues?.[name] ?? undefined
+
+    switch (type) {
+      case 'text':
+        return {name, type, defaultValue: initial}
+      case 'radio':
+        return {name, type, value, defaultChecked: initial === value}
+      case 'select':
+        return {name, defaultValue: initial}
+      case 'checkbox':
+        return {
+          name,
+          type,
+          value,
+          defaultChecked:
+            Array.isArray(initial) && value
+              ? initial.includes(value)
+              : initial ?? false,
+        }
+    }
   }
 
   reset = () => {

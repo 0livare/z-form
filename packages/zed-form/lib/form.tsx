@@ -1,12 +1,12 @@
 import React from 'react'
-import {FormManager, useCreateForm} from './use-create-form'
+import {FormManager, InitialValues} from './use-create-form'
 import {FormContext} from './context'
 
 export type FormProps = Omit<React.ComponentProps<'form'>, 'onSubmit'> & {
   form: FormManager
   onSubmit?: (
     e: React.FormEvent<HTMLFormElement>,
-    values: Record<string, string>,
+    values: InitialValues,
   ) => void
 }
 

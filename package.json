@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "test": "pnpm -r test",
-    "build": "pnpm -F z-form build",
+    "build": "pnpm -F zed-form build && cp README.md packages/zed-form",
     "dev": "pnpm -r --parallel run dev"
   },
   "author": "Zach Olivare <github.com/0livare>",

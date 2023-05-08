@@ -2,7 +2,7 @@
 
 A radically different, yet familiar, approach to forms in React: **just let the browser do it**
 
-> _zero re-renders by default_
+> _Zero re-renders by default_
 
 <!-- A fast, scalable, easy to use, complete form solution for React. -->
 
